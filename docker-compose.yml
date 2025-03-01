@@ -20,6 +20,7 @@ services:
     command: uvicorn api.main:app --host 0.0.0.0 --port 8000
     depends_on:
       - mongo
+      - minio 
     ports:
       - 8000:8000
 
@@ -104,6 +105,20 @@ services:
       - 27017
     ports:
       - 27017:27017
+
+  minio:
+    image: quay.io/minio/minio
+    container_name: minio
+    ports:
+      - "9000:9000"  # MinIO API
+      - "9001:9001"  # MinIO Web Console
+    environment:
+      MINIO_ROOT_USER: minioballert
+      MINIO_ROOT_PASSWORD: minioistgeheim
+    volumes:
+      - /home/oscar/minio/data:/data  # Mounts MinIO data storage
+    command: server /data --console-address ":9001"
+    restart: always  # Ensures MinIO restarts if it crashes
 
 volumes:
   worker-bashhistory:
